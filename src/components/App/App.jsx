@@ -1,39 +1,34 @@
-import React, { Component } from 'react';
+import { useState, useEffect } from 'react';
 
 import ContactForm from '../ContactForm';
 import ContactList from '../ContactList';
 import Filter from '../Filter';
 import * as storage from '../../services/localStorage.js';
+import s from './App.module.css';
 
 const CONTACTS_KEY_LS = 'contacts';
 
-class App extends Component {
-  state = {
-    contacts: [],
-    filter: '',
-  };
+const App = () => {
+  const [contacts, setContacts] = useState([]);
+  const [filter, setFilter] = useState('');
 
-  componentDidMount() {
+  useEffect(() => {
     const dataLocalStorage = storage.get(CONTACTS_KEY_LS);
 
     if (dataLocalStorage) {
-      this.setState({ contacts: dataLocalStorage });
+      setContacts(dataLocalStorage);
     }
-  }
+  }, []);
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.contacts !== this.state.contacts) {
-      storage.save(CONTACTS_KEY_LS, this.state.contacts);
-    }
-  }
+  useEffect(() => {
+    storage.save(CONTACTS_KEY_LS, contacts);
+  }, [contacts]);
 
-  addDataApp = e => {
-    this.setState({
-      [e.target.name]: e.target.value,
-    });
+  const addDataApp = e => {
+    setFilter(e.target.value);
   };
 
-  normalizeName = name =>
+  const normalizeName = name =>
     name
       .split(' ')
       .map(word => {
@@ -43,70 +38,53 @@ class App extends Component {
       })
       .join(' ');
 
-  addContacts = obj => {
-    const isHaveName = this.state.contacts.some(
-      ({ name }) => name === obj.name,
-    );
+  const addContacts = obj => {
+    const isHaveName = contacts.some(({ name }) => name === obj.name);
 
     if (isHaveName) {
-      return alert(`${this.normalizeName(obj.name)} is alredy in contacts.`);
+      return alert(`${normalizeName(obj.name)} is alredy in contacts.`);
     }
 
-    this.setState(prevState => {
-      return {
-        contacts: [...prevState.contacts, obj],
-      };
-    });
+    setContacts(prevState => [...prevState, obj]);
   };
 
-  deleteContact = id => {
-    this.setState(prevState => ({
-      contacts: prevState.contacts.filter(item => item.id !== id),
-      filter: '',
-    }));
+  const deleteContact = id => {
+    setContacts(prevState => prevState.filter(item => item.id !== id));
+    setFilter('');
   };
 
-  resetFilter = () => this.setState({ filter: '' });
-
-  filterContacts = filterName => {
+  const filterContacts = filterName => {
     const normalizedData = filterName.toLowerCase();
-    const arrayFilter = this.state.contacts.filter(({ name }) =>
+    const arrayFilter = contacts.filter(({ name }) =>
       name.toLowerCase().includes(normalizedData),
     );
     return arrayFilter;
   };
 
-  render() {
-    const { filter, contacts, contactForChange } = this.state;
+  return (
+    <div className={s.app}>
+      <h1>Phonebook</h1>
+      <ContactForm onSubmitForm={addContacts} />
 
-    return (
-      <div>
-        <h1>Phonebook</h1>
-        <ContactForm
-          onSubmitForm={this.addContacts}
-          dataForChange={contactForChange}
+      <h2>Contacts</h2>
+      {contacts.length > 1 && (
+        <Filter
+          onChangeDate={addDataApp}
+          value={contacts.length < 1 ? '' : filter}
         />
-
-        <h2>Contacts</h2>
-        {contacts.length > 1 && (
-          <Filter
-            onChangeDate={this.addDataApp}
-            value={contacts.length < 1 ? '' : filter}
-          />
-        )}
-        {!contacts.length && <p>Please, add contact!</p>}
-        {!!contacts.length && (
-          <ContactList
-            normalizeName={this.normalizeName}
-            onClickBtnDel={this.deleteContact}
-            filterContacts={this.filterContacts}
-            filterName={filter}
-          />
-        )}
-      </div>
-    );
-  }
-}
+      )}
+      {!contacts.length && <p>Please, add contact!</p>}
+      {!!contacts.length && (
+        <ContactList
+          normalizeName={normalizeName}
+          onClickBtnDel={deleteContact}
+          filterContacts={filterContacts}
+          filterName={filter}
+        />
+      )}
+    </div>
+  );
+};
 
 export default App;
 

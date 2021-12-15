@@ -1,68 +1,69 @@
-import React, { Component } from 'react';
+import { useState } from 'react';
+
 import { nanoid } from 'nanoid';
 import Input from '../../common/Input';
 import s from './ContactForm.module.css';
 
-class ContactForm extends Component {
-  state = {
+const ContactForm = ({ onSubmitForm }) => {
+  const [dataForm, setdataForm] = useState({
     name: '',
     number: '',
-  };
+  });
 
-  resetForm() {
-    this.setState({ name: '', number: '' });
-  }
-
-  addDataForm = e => {
-    this.setState({
-      [e.target.name]: e.target.value,
+  const resetForm = () =>
+    setdataForm({
+      name: '',
+      number: '',
     });
+
+  const addDataForm = e => {
+    return setdataForm(prevState => ({
+      ...prevState,
+      [e.target.name]: e.target.value,
+    }));
   };
 
-  onSubFormData = e => {
+  const onSubFormData = e => {
     e.preventDefault();
-    const { onSubmitForm } = this.props;
 
-    const objData = { id: nanoid(), ...this.state };
+    const objData = { id: nanoid(), ...dataForm };
 
     onSubmitForm(objData);
-    this.resetForm();
+
+    resetForm();
   };
 
-  render() {
-    const { name, number } = this.state;
+  const { name, number } = dataForm;
+  return (
+    <form onSubmit={onSubFormData} className={s.form}>
+      <Input
+        label="Name"
+        type="text"
+        name="name"
+        onChange={addDataForm}
+        value={name}
+        pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+        title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
+        required
+      />
 
-    return (
-      <form onSubmit={this.onSubFormData} className={s.form}>
-        <Input
-          label="Name"
-          type="text"
-          name="name"
-          onChange={this.addDataForm}
-          value={name}
-          pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-          title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-          required
-        />
+      <Input
+        label="Number"
+        type="tel"
+        name="number"
+        onChange={addDataForm}
+        value={number}
+        pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
+        title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
+        required
+      />
 
-        <Input
-          label="Number"
-          type="tel"
-          name="number"
-          onChange={this.addDataForm}
-          value={number}
-          pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-          title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-          required
-        />
-
-        <button type="submit" className={s.btnAdd}>
-          {' '}
-          Add contact
-        </button>
-      </form>
-    );
-  }
-}
+      <button type="submit" className={s.btnAdd}>
+        {' '}
+        Add contact
+      </button>
+    </form>
+  );
+};
 
 export default ContactForm;

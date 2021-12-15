@@ -3,13 +3,7 @@ import ItemContact from './ItemContact';
 import s from './ContactList.module.css';
 
 const ContactList = props => {
-  const {
-    filterName,
-    filterContacts,
-    onClickBtnDel,
-    onClickBtnChange,
-    normalizeName,
-  } = props;
+  const { filterName, filterContacts, onClickBtnDel, normalizeName } = props;
   return (
     <ul className={s.list}>
       {filterContacts(filterName).map(({ id, name, number }) => {
@@ -20,7 +14,6 @@ const ContactList = props => {
             name={name}
             number={number}
             onClickBtnDel={onClickBtnDel}
-            onClickBtnChange={onClickBtnChange}
             normalizeName={normalizeName}
           />
         );
@@ -32,7 +25,7 @@ const ContactList = props => {
 ContactList.propTypes = {
   filterName: PropTypes.string,
   filterContacts: PropTypes.func,
-  onClickBtn: PropTypes.func,
+  onClickBtnDel: PropTypes.func,
   normalizeName: PropTypes.func,
 };
 
