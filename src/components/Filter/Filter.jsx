@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+
 import Input from '../../common/Input';
 
 function Filter({ onChangeDate, value }) {

@@ -1,10 +1,11 @@
-import { nanoid } from 'nanoid';
+import { useRef } from 'react';
 import PropTypes from 'prop-types';
+import { nanoid } from 'nanoid';
+
 import s from './Input.module.css';
 
-const id = nanoid();
-
 const Input = ({ label, ...arg }) => {
+  const { current: id } = useRef(nanoid());
   return (
     <div className={s.wrapperInput}>
       <label className={s.labelTitle} htmlFor={id}>

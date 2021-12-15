@@ -1,9 +1,11 @@
+import { useEffect, memo } from 'react';
 import PropTypes from 'prop-types';
 import ItemContact from './ItemContact';
 import s from './ContactList.module.css';
 
 const ContactList = props => {
   const { filterName, filterContacts, onClickBtnDel, normalizeName } = props;
+
   return (
     <ul className={s.list}>
       {filterContacts(filterName).map(({ id, name, number }) => {
@@ -29,4 +31,4 @@ ContactList.propTypes = {
   normalizeName: PropTypes.func,
 };
 
-export default ContactList;
+export default memo(ContactList);
